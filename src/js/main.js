@@ -4,18 +4,12 @@ const form = document.querySelector('.form');
 const list = document.querySelector('.list');
 const input = document.querySelector('.input');
 const addButton = document.querySelector('.add-button');
+const sortByCompleteBtn = document.getElementById('sort-by-complete');
+const deleteCompletedBtn = document.getElementById('delete-completed');
 
 let arrOfTasks = [];
 
-window.addEventListener('load', () => {
-  if (!localStorage.getItem('listOfTasks')) {
-    return;
-  }
-  if (localStorage.getItem('listOfTasks')) {
-    arrOfTasks = returnFromLocalStorage('listOfTasks');
-    createListItems(arrOfTasks);
-  }
-});
+let sortByCompleteVal = false; // if true list gets sorted by completion
 
 //------------------------------------------------------------------------------------
 // add loacalStorage function
@@ -80,7 +74,13 @@ const checkAndDeleteFunc = (e) => {
 //create listItems Function
 
 const createListItems = (arr) => {
-  arr.sort((a, b) => b.id - a.id);
+  if (sortByCompleteVal === false) {
+    arr.sort((a, b) => b.id - a.id);
+  }
+  if (sortByCompleteVal === true) {
+    arr.sort((a, b) => Number(a.done) - Number(b.done));
+  }
+  addLocalStorage(arr);
 
   list.innerHTML = '';
   if (!arr) {
@@ -116,14 +116,41 @@ const createListItems = (arr) => {
   });
 };
 //------------------------------------------------------------------------------------
+// EVENTLISTENERS
 
+window.addEventListener('load', () => {
+  if (!localStorage.getItem('listOfTasks')) {
+    return;
+  }
+  if (localStorage.getItem('listOfTasks')) {
+    arrOfTasks = returnFromLocalStorage('listOfTasks');
+    createListItems(arrOfTasks);
+  }
+});
+
+// Add
 form.addEventListener('submit', (e) => {
   e.preventDefault();
 
   addFunc(input.value);
+  console.log(arrOfTasks);
 
   addLocalStorage(arrOfTasks);
 
   const ret = returnFromLocalStorage('listOfTasks');
   createListItems(ret);
+});
+
+// Sort By Complete
+sortByCompleteBtn.addEventListener('click', () => {
+  sortByCompleteVal = sortByCompleteVal ? false : true;
+
+  setTimeout(createListItems(arrOfTasks, 3000));
+  createListItems(arrOfTasks);
+});
+
+// delete completed
+deleteCompletedBtn.addEventListener('click', () => {
+  arrOfTasks = arrOfTasks.filter((el) => el.done === false);
+  createListItems(arrOfTasks);
 });
