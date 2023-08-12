@@ -5,48 +5,78 @@ const list = document.querySelector('.list');
 const input = document.querySelector('.input');
 const addButton = document.querySelector('.add-button');
 
-const arrOfTasks = [];
+let arrOfTasks = [];
+
+window.addEventListener('load', () => {
+  if (!localStorage.getItem('listOfTasks')) {
+    return;
+  }
+  if (localStorage.getItem('listOfTasks')) {
+    arrOfTasks = returnFromLocalStorage('listOfTasks');
+    createListItems(arrOfTasks);
+  }
+});
 
 //------------------------------------------------------------------------------------
-
 // add loacalStorage function
+
 const addLocalStorage = (arr) => {
   localStorage.setItem('listOfTasks', JSON.stringify(arr));
 };
 //------------------------------------------------------------------------------------
 // return from localStorage function
+
 const returnFromLocalStorage = (val) => {
   // return JSON.parse(localStorage.getItem(val));
   const xx = JSON.parse(localStorage.getItem(val));
-  console.log('XXXX', xx);
   return xx;
 };
 //------------------------------------------------------------------------------------
 // add function
+
 const addFunc = (task) => {
   if (task !== '') {
-    arrOfTasks.push({ task: task, id: Date.now(), done: false }); //NOTE:
-    console.log(arrOfTasks);
-    input.value = '';
+    arrOfTasks = returnFromLocalStorage('listOfTasks');
+    if (arrOfTasks !== null) {
+      arrOfTasks.push({ task: task, id: Date.now(), done: false });
+      console.log(arrOfTasks);
+      input.value = '';
+    }
   }
 };
 //------------------------------------------------------------------------------------
 // check and delete function
+
 const checkAndDeleteFunc = (e) => {
+  const dataKeyofItem = e.target.parentElement.getAttribute('data-key');
   if (e.target.type == 'checkbox') {
-    console.log('CHECKBOX...');
-    e.target.parentElement.classList.add('completet'); //NOTE: chenge class for completed card design
     arrOfTasks.forEach((item, i, arr) => {
-      console.log(item.id);
+      if (item.id == dataKeyofItem) {
+        item.done = !item.done;
+      }
     });
+
+    addLocalStorage(arrOfTasks);
+    const ret = returnFromLocalStorage('listOfTasks');
+    createListItems(ret);
   }
   if (e.target.textContent == 'erase') {
-    e.target.parentElement.remove();
+    arrOfTasks.forEach((item, i, arr) => {
+      if (item.id == dataKeyofItem) {
+        arrOfTasks.splice(i, 1);
+      }
+
+      addLocalStorage(arrOfTasks);
+      const ret = returnFromLocalStorage('listOfTasks');
+      createListItems(ret);
+    });
+    // e.target.parentElement.remove();
   }
 };
 
 //------------------------------------------------------------------------------------
 //create listItems Function
+
 const createListItems = (arr) => {
   list.innerHTML = '';
   arr.forEach((item, i, arr) => {
@@ -55,11 +85,13 @@ const createListItems = (arr) => {
 
     const isDone = document.createElement('input');
     isDone.setAttribute('type', 'checkbox');
+    if (item.done) {
+      isDone.setAttribute('checked', '');
+      li.classList.add('completed');
+    }
 
     const itemTxt = document.createElement('span');
     itemTxt.textContent = item.task;
-
-    if (item.done) isDone.setAttribute('checked', '');
 
     const delBtn = document.createElement('button');
     delBtn.textContent = 'erase';
@@ -72,6 +104,7 @@ const createListItems = (arr) => {
   });
 };
 //------------------------------------------------------------------------------------
+
 form.addEventListener('submit', (e) => {
   e.preventDefault();
 
@@ -79,6 +112,6 @@ form.addEventListener('submit', (e) => {
 
   addLocalStorage(arrOfTasks);
 
-  const ab = returnFromLocalStorage('listOfTasks');
-  createListItems(ab);
+  const ret = returnFromLocalStorage('listOfTasks');
+  createListItems(ret);
 });
