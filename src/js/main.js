@@ -39,8 +39,10 @@ const addFunc = (task) => {
     arrOfTasks = returnFromLocalStorage('listOfTasks');
     if (arrOfTasks !== null) {
       arrOfTasks.push({ task: task, id: Date.now(), done: false });
-      console.log(arrOfTasks);
       input.value = '';
+    } else {
+      arrOfTasks = [];
+      arrOfTasks.push({ task: task, id: Date.now(), done: false });
     }
   }
 };
@@ -79,6 +81,9 @@ const checkAndDeleteFunc = (e) => {
 
 const createListItems = (arr) => {
   list.innerHTML = '';
+  if (!arr) {
+    return;
+  }
   arr.forEach((item, i, arr) => {
     const li = document.createElement('li');
     li.setAttribute('data-key', item.id);
@@ -92,6 +97,9 @@ const createListItems = (arr) => {
 
     const itemTxt = document.createElement('span');
     itemTxt.textContent = item.task;
+
+    const date = document.createElement('span');
+    // date.textContent = item.id; // NOTE:
 
     const delBtn = document.createElement('button');
     delBtn.textContent = 'erase';
