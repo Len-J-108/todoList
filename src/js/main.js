@@ -80,6 +80,8 @@ const checkAndDeleteFunc = (e) => {
 //create listItems Function
 
 const createListItems = (arr) => {
+  arr.sort((a, b) => b.id - a.id);
+
   list.innerHTML = '';
   if (!arr) {
     return;
@@ -99,12 +101,14 @@ const createListItems = (arr) => {
     itemTxt.textContent = item.task;
 
     const date = document.createElement('span');
-    // date.textContent = item.id; // NOTE:
+    date.textContent = new Date(item.id)
+      .toLocaleDateString()
+      .replaceAll('/', '.');
 
     const delBtn = document.createElement('button');
     delBtn.textContent = 'erase';
 
-    li.append(isDone, itemTxt, delBtn);
+    li.append(isDone, itemTxt, date, delBtn);
     // appending
     list.append(li);
 
