@@ -1,16 +1,16 @@
-// add function
 import { returnFromLocalStorage } from './localStorage.js';
 
-const addFunc = (task, _arr) => {
-  if (task !== '') {
-    _arr = returnFromLocalStorage('listOfTasks');
-    if (_arr !== null) {
-      _arr.push({ task: task, id: Date.now(), done: false });
-      task = '';
+const addFunc = (val, arr) => {
+  if (val !== '') {
+    arr = returnFromLocalStorage('listOfTasks');
+    if (arr !== null) {
+      arr.push({ task: val, id: Date.now(), done: false });
+      val = '';
     } else {
-      _arr = [];
-      _arr.push({ task: task, id: Date.now(), done: false });
+      arr = [];
+      arr.push({ task: val, id: Date.now(), done: false });
     }
+    return arr;
   }
 };
 

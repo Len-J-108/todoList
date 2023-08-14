@@ -1,3 +1,6 @@
+import addFunc from './addFunc.js';
+import { addLocalStorage, returnFromLocalStorage } from './localStorage.js';
+
 // Selecting
 const wrapper = document.getElementById('wrapper');
 const form = document.querySelector('.form');
@@ -11,35 +14,6 @@ let arrOfTasks = [];
 
 let sortByCompleteVal = false; // if true list gets sorted by completion
 
-//------------------------------------------------------------------------------------
-// add loacalStorage function
-
-const addLocalStorage = (arr) => {
-  localStorage.setItem('listOfTasks', JSON.stringify(arr));
-};
-//------------------------------------------------------------------------------------
-// return from localStorage function
-
-const returnFromLocalStorage = (val) => {
-  // return JSON.parse(localStorage.getItem(val));
-  const xx = JSON.parse(localStorage.getItem(val));
-  return xx;
-};
-//------------------------------------------------------------------------------------
-// add function
-
-const addFunc = (task) => {
-  if (task !== '') {
-    arrOfTasks = returnFromLocalStorage('listOfTasks');
-    if (arrOfTasks !== null) {
-      arrOfTasks.push({ task: task, id: Date.now(), done: false });
-      input.value = '';
-    } else {
-      arrOfTasks = [];
-      arrOfTasks.push({ task: task, id: Date.now(), done: false });
-    }
-  }
-};
 //------------------------------------------------------------------------------------
 // check and delete function
 
@@ -131,10 +105,8 @@ window.addEventListener('load', () => {
 // Add
 form.addEventListener('submit', (e) => {
   e.preventDefault();
-
-  addFunc(input.value);
-  console.log(arrOfTasks);
-
+  arrOfTasks = addFunc(input.value, arrOfTasks);
+  // console.log('main: ', arrOfTasks);
   addLocalStorage(arrOfTasks);
 
   const ret = returnFromLocalStorage('listOfTasks');
