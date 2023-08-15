@@ -11,6 +11,7 @@ const input = document.querySelector('.input');
 // const addButton = document.querySelector('.add-button');
 const sortByCompleteBtn = document.getElementById('sort-by-complete');
 const deleteCompletedBtn = document.getElementById('delete-completed');
+const eraseAllBtn = document.getElementById('erase-all');
 
 // initial Array
 let arrOfTasks = [];
@@ -23,7 +24,9 @@ let sortByCompleteVal = false; // if true list gets sorted by completion
 
 // Load List from LocalStorage on refresh...
 window.addEventListener('load', () => {
-  if (!localStorage.getItem('listOfTasks')) {
+  const abc = localStorage.getItem('listOfTasks');
+
+  if (!abc || abc === 'undefined') {
     return;
   }
   if (localStorage.getItem('listOfTasks')) {
@@ -36,7 +39,11 @@ window.addEventListener('load', () => {
 form.addEventListener('submit', (e) => {
   e.preventDefault(); //prevents the form from getting sent.
 
-  arrOfTasks = addFunc(input.value, arrOfTasks);
+  if (!input.value) {
+    return alert('enter something...');
+  }
+
+  arrOfTasks = addFunc(input.value.trim(), arrOfTasks);
   input.value = ''; // resets the text input after adding item.
   addLocalStorage(arrOfTasks); // adding to localStorage in browser under 'listOfTasks'
 
@@ -62,6 +69,13 @@ sortByCompleteBtn.addEventListener('click', () => {
 deleteCompletedBtn.addEventListener('click', () => {
   arrOfTasks = arrOfTasks.filter((el) => el.done === false);
   createListItems(arrOfTasks, sortByCompleteVal, list); // renders the list
+});
+
+// erase all
+eraseAllBtn.addEventListener('click', (e) => {
+  localStorage.removeItem('listOfTasks'); // deletes list from localStorage
+  arrOfTasks = []; // resets arr for (empty) rendering
+  createListItems(arrOfTasks, sortByCompleteVal, list); // renders the list (empty)
 });
 
 // Exports
